@@ -35,7 +35,7 @@ To build the database you must first run the python script (with python 3, the n
 The database has build with an Fact table named `songplays` and four dimensions named, `users`, `artists`, `songs` and `time`.  The star schema can be seen below.
 
 
-![Database schema](data_base_schema)
+![Database schema](data_base_schema.png)
 
 
 ### ETL pipeline
