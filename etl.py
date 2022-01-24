@@ -6,6 +6,11 @@ from sql_queries import *
 import numpy as np  # Needed to reverse list time_data
 
 def process_song_file(cur, filepath):
+    """
+    - Build the DataFrame from data/songdata/ JSON files using filepath module.
+    - Using the dataframe 'df' make song_data dataframe and insert that values to song_data table. 
+    - Using the dataframe 'df' make artist_data dataframe and insert that values to artist_data table. 
+    """
     # open song file
     df = pd.read_json(filepath, lines=True)
 
@@ -19,6 +24,17 @@ def process_song_file(cur, filepath):
 
 
 def process_log_file(cur, filepath):
+    """
+      Load time table:
+    - Build the DataFrame from data/songdata/ JSON files using filepath module.
+    - Filter NextSong to make a new dataset.
+    - Create a time_data dataframe with using filtered column.
+    - Make a new dataframe to insert data on time_table table. 
+
+      Load song_play table:
+    - Create a new dataframe (user_df) from user information.
+    - With songid and artistid from song and artist table.
+    """
     # open log file
     df = pd.read_json(filepath, lines=True)
 
@@ -27,9 +43,10 @@ def process_log_file(cur, filepath):
 
     # convert timestamp column to datetime
     t = pd.to_datetime(df['ts'], unit='ms')
-    
+    df['ts'] = pd.to_datetime(df['ts'], unit='ms')
+
     # insert time data records
-    time_data = (df.ts.values, t.dt.hour.values, t.dt.day.values, t.dt.week.values, t.dt.month.values, t.dt.year.values, t.dt.dayofweek.values)
+    time_data = (t, t.dt.hour.values, t.dt.day.values, t.dt.week.values, t.dt.month.values, t.dt.year.values, t.dt.dayofweek.values)
     column_labels = ('start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday')
     time_df = pd.DataFrame(np.array(time_data).T, columns=column_labels)
 
@@ -61,6 +78,10 @@ def process_log_file(cur, filepath):
 
 
 def process_data(cur, conn, filepath, func):
+    """
+    - This module process the JSON format files.
+    - Get all files matching extension from directory.
+    """
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -80,6 +101,11 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
+    """
+    - Establishes connection to sparkifydb.
+    - Call process_data function to process song_files and log_files.
+    - Finally, close the connection.
+    """
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
